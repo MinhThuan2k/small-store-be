@@ -1,0 +1,9 @@
+model User {
+    id Int     @default(autoincrement()) @id
+    email String  @unique
+    password String? 
+    name String
+    token String?
+    google_id String?
+    password_changed_at DateTime?
+}
