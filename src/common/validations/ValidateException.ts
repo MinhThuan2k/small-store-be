@@ -10,6 +10,6 @@ export class ValidationException extends HttpException {
       },
       HttpStatus.BAD_REQUEST,
     );
-    this.name = 'ValidationError';
+    this.name = ValidationException.name;
   }
 }

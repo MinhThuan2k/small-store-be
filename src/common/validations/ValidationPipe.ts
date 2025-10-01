@@ -1,5 +1,5 @@
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
-import { validate } from 'class-validator';
+import { validate, ValidationError } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { ValidationException } from '@/common/validations/ValidateException';
 
@@ -9,11 +9,15 @@ export class ValidationPipe implements PipeTransform<any> {
     if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
-    const object = plainToInstance(metatype, value);
-    const errors = await validate(object);
+    const object = plainToInstance(metatype, value ?? {});
+    const errors = await validate(object, {
+      skipMissingProperties: false,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
 
     if (errors.length > 0) {
-      throw new ValidationException(errors);
+      throw new ValidationException(this.formatErrors(errors));
     }
     return value;
   }
@@ -27,5 +31,13 @@ export class ValidationPipe implements PipeTransform<any> {
       Object,
     ];
     return !types.includes(metatype);
+  }
+
+  private formatErrors(errors: ValidationError[]) {
+    return errors.map((err) => ({
+      field: err.property,
+      value: err.value,
+      messages: Object.values(err.constraints ?? {}),
+    }));
   }
 }

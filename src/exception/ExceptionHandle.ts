@@ -41,15 +41,15 @@ export class ExceptionHandle implements ExceptionFilter {
         body: request.body,
         headers: request.headers,
       })}\n` +
-        `\terror: ${JSON.stringify(exceptionResponse)} \n` +
+        `\terror: ${JSON.stringify(exception.getResponse().errors || {})} \n` +
         `\tstack: ${exception.stack} \n`,
     );
 
     // trả response
     response.status(status).send({
-      success: false,
-      error: exception?.name || 'Error',
       message: exceptionResponse.message,
+      name: exception.name || 'Error',
+      error: exception.getResponse().errors || null,
       stack:
         process.env.NODE_ENV === 'development' ? exception?.stack : undefined,
     });
