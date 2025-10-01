@@ -1,6 +1,8 @@
-import { get_env } from '@/common/helpers/function';
+import { ConfigService } from '@nestjs/config';
 
-export const jwtSecret = get_env('JWT_SECRET');
+const configService = new ConfigService();
+
+export const jwtSecret = configService.get<string>('JWT_SECRET');
 
 export const expiresIn: number | string = -1;
 export const expiresInRedis: number = 60 * 60 * 24 * 7; // 7 days
@@ -10,4 +12,4 @@ if (expiresIn && expiresIn > 0) {
   signOptions.expiresIn = expiresIn;
 }
 
-export const jwtIssuer = get_env('JWT_ISSUER');
+export const jwtIssuer = configService.get<string>('JWT_ISSUER');

@@ -7,5 +7,6 @@ export class UserException extends HttpException {
   ) {
     super({ statusCode: status, message }, status);
     this.name = UserException.name;
+    this.stack = new Error().stack;
   }
 }
