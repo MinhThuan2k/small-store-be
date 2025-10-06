@@ -15,6 +15,7 @@ import { Oauth2Google } from '@/middleware/Oauth2Google';
 import { UserException } from '@/exception/UserException';
 import { Payload } from '@/modules/auth/interface/InterfacePayload';
 import { User } from '@prisma/client';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class Authentication implements CanActivate {
@@ -25,6 +26,7 @@ export class Authentication implements CanActivate {
     private redisService: RedisService,
     private prisma: PrismaService,
     private oauth2Google: Oauth2Google,
+    private cls: ClsService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -72,6 +74,7 @@ export class Authentication implements CanActivate {
         name: user.name,
         email: user.email,
       };
+      this.cls.set('userId', user.id);
       await this.redisService.client.expire(key, expiresInRedis);
     } catch (e) {
       throw e instanceof JsonWebTokenError
