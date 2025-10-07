@@ -21,6 +21,7 @@ export class ExceptionHandle implements ExceptionFilter {
       exception instanceof HttpException
         ? {
             message: (exception.getResponse() as any).message,
+            errors: (exception.getResponse() as any).errors,
             statusCode: status,
           }
         : {
@@ -41,7 +42,7 @@ export class ExceptionHandle implements ExceptionFilter {
         body: request.body,
         headers: request.headers,
       })}\n` +
-        `\terror: ${JSON.stringify(exception.getResponse().errors || {})} \n` +
+        `\terror: ${JSON.stringify(exceptionResponse.errors || {})} \n` +
         `\tstack: ${exception.stack} \n`,
     );
 
@@ -49,7 +50,7 @@ export class ExceptionHandle implements ExceptionFilter {
     response.status(status).send({
       message: exceptionResponse.message,
       name: exception.name || 'Error',
-      error: exception.getResponse().errors || null,
+      error: exceptionResponse.errors || null,
       stack:
         process.env.NODE_ENV === 'development' ? exception?.stack : undefined,
     });

@@ -45,13 +45,17 @@ export const softDelete = Prisma.defineExtension({
           },
         });
       },
+    },
+  },
+  query: {
+    $allModels: {
       async $allOperations({ model, operation, args, query }) {
         if (!softDeleteModels.has(model)) return query(args);
-
         // Read operations: automatically filter deleted = false
         if (isReadOperation(operation)) {
           if (operation === 'findUnique') operation = 'findFirst';
           args = addDeletedFilter(args, IS_NON_DELETED);
+          console.log(args);
         }
 
         const { overwriteOperation, newArgs } = getOperationArgs(
@@ -62,7 +66,7 @@ export const softDelete = Prisma.defineExtension({
         operation = overwriteOperation;
         args = newArgs;
 
-        return query({ ...args, operation });
+        return query(newArgs);
       },
     },
   },
@@ -77,7 +81,6 @@ function addDeletedFilter(args: any, deletedValue: number) {
   newArgs.where = {
     ...(newArgs.where ?? {}),
     deleted: deletedValue,
-    deletedAt: deletedValue === IS_NON_DELETED ? null : { not: null },
   };
   return newArgs;
 }
@@ -103,29 +106,43 @@ function isReadOperation(
   ].includes(operation);
 }
 
-function getOperationArgs(
-  operation: string,
+function getOperationArgs<
+  T extends
+    | 'findMany'
+    | 'updateMany'
+    | 'findUnique'
+    | 'findFirst'
+    | 'create'
+    | 'delete'
+    | 'count'
+    | 'update'
+    | 'deleteMany',
+>(
+  operation: any,
   args: any,
-): { overwriteOperation: string; newArgs: any } {
-  const map = {
+): {
+  overwriteOperation: T;
+  newArgs: any;
+} {
+  const map: Record<string, { overwriteOperation: T; newArgs: any }> = {
     delete: {
-      overwriteOperation: 'update',
+      overwriteOperation: 'update' as T,
       newArgs: operationDelete(args),
     },
     deleteMany: {
-      overwriteOperation: 'updateMany',
+      overwriteOperation: 'updateMany' as T,
       newArgs: operationDelete(args),
     },
     update: {
-      overwriteOperation: 'update',
+      overwriteOperation: 'update' as T,
       newArgs: operationUpdate(args),
     },
     updateMany: {
-      overwriteOperation: 'updateMany',
+      overwriteOperation: 'updateMany' as T,
       newArgs: operationUpdate(args),
     },
     create: {
-      overwriteOperation: 'create',
+      overwriteOperation: 'create' as T,
       newArgs: operationCreate(args),
     },
   } as const;

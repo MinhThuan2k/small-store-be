@@ -9,15 +9,8 @@ model User {
 
     createdAt   DateTime      @default(now()) @map("created_at")
     updatedAt   DateTime?     @updatedAt @map("updated_at")
-    createdBy   BigInt       @map("created_by")
-    updatedBy   BigInt       @map("updated_by")
     deleted     Int           @default(0)
     deletedAt   DateTime?     @map("deleted_at")
-
-    createdUser User? @relation("UserCreatedBy", fields: [createdBy], references: [id])
-    updatedUser User? @relation("UserUpdatedBy", fields: [updatedBy], references: [id])
-    createdUsers User[] @relation("UserCreatedBy")
-    updatedUsers User[] @relation("UserUpdatedBy")
 
     CategoryCreatedBy Category[] @relation("CategoryCreatedBy")
     CategoryUpdatedBy Category[] @relation("CategoryUpdatedBy")

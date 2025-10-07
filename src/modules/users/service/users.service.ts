@@ -4,9 +4,10 @@ import { UserException } from '@/exception/UserException';
 import { FastifyRequestWithUser } from '@/middleware/Authentication';
 import { ChangePasswordDto } from '@/modules/users/dto/change-password.dto';
 import { SignUpDto } from '@/modules/users/dto/signup.dto';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Res } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { User } from '@prisma/client';
+import { FastifyReply } from 'fastify';
 
 @Injectable()
 export class UsersService {
@@ -47,13 +48,23 @@ export class UsersService {
       });
   }
 
-  async signUp(dto: SignUpDto) {
-    await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        password: await hashBcrypt(dto.password),
-        name: dto.name,
-      },
+  async signUp(dto: SignUpDto, @Res() response: FastifyReply) {
+    return this.prisma.$transaction(async (tx) => {
+      const existEmail = await tx.user.findFirst({
+        where: { email: dto.email },
+      });
+      if (existEmail) {
+        throw new UserException('Email already exists');
+      }
+
+      const user = await tx.user.create({
+        data: {
+          email: dto.email,
+          password: await hashBcrypt(dto.password),
+          name: dto.name,
+        },
+      });
+      return response.send({ message: 'Create user successfully' });
     });
   }
 }

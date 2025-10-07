@@ -4,7 +4,7 @@ model Product {
   description String?
   summary     String?
   cover       String?
-  categoryId  BigInt?
+  categoryId  BigInt?       @map("category_id")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime?     @updatedAt @map("updated_at")
   createdBy   BigInt        @map("created_by")
@@ -13,4 +13,6 @@ model Product {
   deletedAt   DateTime?     @map("deleted_at")
 
   category    Category? @relation("CategoryProduct", fields: [categoryId], references: [id])
+
+  @@map("products")
 }

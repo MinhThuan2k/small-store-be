@@ -8,9 +8,11 @@ import { RoleMiddleware } from '@/middleware/RoleMiddleware';
 import { AuthModule, PrismaModule, RedisModule, UsersModule } from '@/modules';
 import { GoogleOAuth2Service } from '@/modules/auth/services/google-oauth2.service';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ClsModule } from 'nestjs-cls';
 
 const imports = [
   ConfigModule.forRoot({ isGlobal: true }),
+  ClsModule.forRoot({ global: true }),
   PrismaModule,
   RedisModule,
   AuthModule,

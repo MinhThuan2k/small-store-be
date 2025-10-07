@@ -40,9 +40,8 @@ export class UsersController {
   @NoAuth()
   async signUp(
     @Body(new ValidationPipe()) req: SignUpDto,
-    @Res() res: FastifyReply,
+    @Res() response: FastifyReply,
   ) {
-    this.usersService.signUp(req);
-    return res.send({ message: 'Create user successfully' });
+    return this.usersService.signUp(req, response);
   }
 }
