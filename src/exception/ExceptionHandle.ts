@@ -29,21 +29,23 @@ export class ExceptionHandle implements ExceptionFilter {
           };
 
     // log
-    const logsDir = path.join(__dirname, '../../logs');
-    const logFileName = `logs-${new Date().toISOString().split('T')[0]}.log`;
-    const logFilePath = path.join(logsDir, logFileName);
-    await fs.ensureDir(logsDir);
-    await fs.appendFile(
-      logFilePath,
-      `[${new Date().toISOString()}]\t${JSON.stringify({
-        url: request.url,
-        method: request.method,
-        body: request.body,
-        headers: request.headers,
-      })}\n` +
-        `\terror: ${JSON.stringify(exception.getResponse().errors || {})} \n` +
-        `\tstack: ${exception.stack} \n`,
-    );
+    if (process.env.VERCEL !== '1') {
+      const logsDir = path.join(__dirname, '../../logs');
+      const logFileName = `logs-${new Date().toISOString().split('T')[0]}.log`;
+      const logFilePath = path.join(logsDir, logFileName);
+      await fs.ensureDir(logsDir);
+      await fs.appendFile(
+        logFilePath,
+        `[${new Date().toISOString()}]\t${JSON.stringify({
+          url: request.url,
+          method: request.method,
+          body: request.body,
+          headers: request.headers,
+        })}\n` +
+          `\terror: ${JSON.stringify(exception.getResponse().errors || {})} \n` +
+          `\tstack: ${exception.stack} \n`,
+      );
+    }
 
     // trả response
     response.status(status).send({
