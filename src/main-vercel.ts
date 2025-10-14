@@ -17,11 +17,13 @@ dotenv.config();
 let cachedApp: NestFastifyApplication;
 
 async function createApp(): Promise<NestFastifyApplication> {
+  const adapter = new FastifyAdapter({
+    querystringParser: (str) => qs.parse(str),
+  });
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({
-      querystringParser: (str) => qs.parse(str),
-    }),
+    adapter,
   );
 
   await app.register(fastifyCsrfProtection);
@@ -42,12 +44,12 @@ async function createApp(): Promise<NestFastifyApplication> {
   return app;
 }
 
-// 👇 đây là handler mà Vercel sẽ gọi
 export default async function handler(req: any, res: any) {
   if (!cachedApp) {
     cachedApp = await createApp();
   }
 
-  const instance = cachedApp.getHttpAdapter().getInstance();
-  instance.server.emit('request', req, res);
+  const fastify = cachedApp.getHttpAdapter().getInstance();
+
+  fastify.routing(req, res);
 }
