@@ -10,6 +10,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { plainToClass } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
+import JSONbig from 'json-bigint';
 
 @Injectable()
 export class AuthService {
@@ -20,33 +21,32 @@ export class AuthService {
   ) {}
 
   async signIn(dto: LoginUserDto): Promise<LoginTransform> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        email: dto.email,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.findFirst({
+        where: {
+          email: dto.email,
+        },
+      });
+      const userId = user.id.toString();
+
+      if (!user || !(await compareBcrypt(dto.password, user.password))) {
+        throw new UserException(
+          'Email or Password is incorrect!',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      const payload: Payload = {
+        iss: 'clone-jira',
+        sub: userId,
+        jit: uuidv4(),
+      };
+      const token = await this.jwtService.signAsync(payload);
+
+      await this.redisService.setUserCache(JSONbig.stringify(user), userId);
+      await this.redisService.setToken(token, userId, payload.jit);
+
+      return plainToClass(LoginTransform, { token, user });
     });
-
-    if (!user || !(await compareBcrypt(dto.password, user.password))) {
-      throw new UserException(
-        'Email or Password is incorrect!',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-
-    const payload: Payload = {
-      iss: 'clone-jira',
-      sub: user.id,
-      jit: uuidv4(),
-    };
-    const token = await this.jwtService.signAsync(payload);
-    const cryptoToken = await this.redisService.encryptToken(token);
-
-    await this.redisService.set(
-      `${this.redisService.prefixUser}:${user.id}:${payload.jit}`,
-      cryptoToken,
-      expiresInRedis,
-    );
-
-    return plainToClass(LoginTransform, { token, user });
   }
 }

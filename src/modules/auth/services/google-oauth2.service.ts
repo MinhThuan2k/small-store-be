@@ -1,3 +1,4 @@
+import { JSONbig } from 'json-bigint';
 import { JwtService } from '@nestjs/jwt';
 import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
@@ -88,21 +89,18 @@ export class GoogleOAuth2Service {
         },
       });
     }
+    const userId = user.id.toString();
 
     const payload: Payload = {
       iss: jwtIssuer,
-      sub: user.id,
+      sub: user.id.toString(),
       jit: uuidv4(),
       extend_iss: payloadGoogle.iss,
     };
     const token = await this.jwtService.signAsync(payload);
-    const cryptoToken = await this.redisService.encryptToken(idToken); // save encrypt token google to redis
 
-    await this.redisService.set(
-      `${this.redisService.prefixUser}:${user.id}:${payload.jit}`,
-      cryptoToken,
-      expired,
-    );
+    await this.redisService.setToken(idToken, userId, payload.jit);
+    await this.redisService.setUserCache(JSONbig.stringify(user), userId);
 
     return plainToClass(LoginTransform, { token, user });
   }

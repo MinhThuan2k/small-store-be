@@ -7,7 +7,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   public client: Redis;
   public prefix: string;
   public prefixUser: string;
-  public secretKey: string;
+  public expiresInRedis: number;
 
   constructor(private configService: ConfigService) {
     const url = this.configService.get<string>('REDIS_URL');
@@ -15,7 +15,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     const port = this.configService.get<number>('REDIS_PORT');
     this.prefix = this.configService.get<string>('REDIS_PREFIX');
     this.prefixUser = this.configService.get<string>('REDIS_PREFIX_USER');
-    this.secretKey = this.configService.get<string>('REDIS_SECRET');
+    this.expiresInRedis = 60 * 60 * 24 * 7;
 
     this.client = url
       ? new Redis(url)
@@ -60,12 +60,25 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.client.del(key);
   }
 
-  async encryptToken(token: string): Promise<string> {
-    return CryptoJS.AES.encrypt(token, this.secretKey).toString();
+  async setUserCache(value: string, userId: string): Promise<void> {
+    const key = `${this.prefixUser}:${userId}`;
+    await this.set(key, value, this.expiresInRedis);
   }
-
-  async decryptToken(encryptedToken: any): Promise<string> {
-    const bytes = CryptoJS.AES.decrypt(encryptedToken, this.secretKey);
-    return bytes.toString(CryptoJS.enc.Utf8);
+  async delUserCache(userId: string): Promise<void> {
+    const key = `${this.prefixUser}:${userId}`;
+    await this.delete(key);
+  }
+  async setToken(value: string, userId: string, jit: string): Promise<void> {
+    const key = `${this.prefixUser}:${userId}:${jit}`;
+    await this.set(key, value, this.expiresInRedis);
+  }
+  async getToken(userId: string, jit: string): Promise<string> {
+    const key = `${this.prefixUser}:${userId}:${jit}`;
+    const fullKey = this.prefix + ':' + key;
+    return await this.client.get(fullKey);
+  }
+  async deleteToken(userId: string, jit: string): Promise<void> {
+    const key = `${this.prefixUser}:${userId}:${jit}`;
+    await this.delete(key);
   }
 }

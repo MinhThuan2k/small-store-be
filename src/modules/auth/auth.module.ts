@@ -6,14 +6,20 @@ import { AuthService } from '@/modules/auth/services/auth.service';
 import { GoogleOAuth2Service } from '@/modules/auth/services/google-oauth2.service';
 import { LoginTransform } from '@/modules/auth/transformers/login.transform';
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+console.log(signOptions, 'signOptions');
 
 @Module({
   imports: [
-    JwtModule.register({
+    ConfigModule,
+    JwtModule.registerAsync({
       global: true,
-      secret: jwtSecret,
-      signOptions: signOptions,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
     }),
   ],
   controllers: [AuthController, OAuth2Controller],

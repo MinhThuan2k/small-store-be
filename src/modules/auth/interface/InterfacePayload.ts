@@ -1,5 +1,5 @@
 export interface Payload {
-  sub: bigint;
+  sub: string;
   jit?: string;
   iss: string;
   extend_iss?: string;

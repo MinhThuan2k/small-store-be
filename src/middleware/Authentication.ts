@@ -45,15 +45,18 @@ export class Authentication implements CanActivate {
         secret: jwtSecret,
       });
       const key = `${this.redisService.prefixUser}:${payload.sub}:${payload.jit}`;
-      const userData = await this.redisService.get(key);
-      const decryptToken = await this.redisService.decryptToken(userData);
+      // const userData = await this.redisService.get(key);
+      const tokenRedis = await this.redisService.getToken(
+        payload.sub,
+        payload.jit,
+      );
 
       // Authentication Google
       if (this.oauth2Google.iss.includes(payload.extend_iss)) {
-        await this.oauth2Google.verify(decryptToken).catch((err) => {
+        await this.oauth2Google.verify(tokenRedis).catch((err) => {
           throw new JsonWebTokenError(err);
         });
-      } else if (token !== decryptToken) {
+      } else if (token !== tokenRedis) {
         throw new JsonWebTokenError('Invalid or unverified token');
       }
 
