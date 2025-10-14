@@ -13,6 +13,7 @@ import { ExceptionHandle } from './exception/ExceptionHandle';
 import fastifyCsrfProtection from '@fastify/csrf-protection';
 
 dotenv.config();
+console.log('>>> NestJS on Vercel handler loaded');
 
 let cachedApp: NestFastifyApplication;
 
