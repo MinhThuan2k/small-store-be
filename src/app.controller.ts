@@ -7,7 +7,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 export default class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @Get('hello')
   hello(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
     return this.appService.hello(req, res);
   }
