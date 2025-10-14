@@ -32,7 +32,7 @@ export default class AuthController {
       },
     },
   })
-  async signIn(@Body(new ValidationPipe()) loginUserDto: LoginUserDto) {
+  async signIn(@Body() loginUserDto: LoginUserDto) {
     return await this.authService.signIn(loginUserDto);
   }
 }

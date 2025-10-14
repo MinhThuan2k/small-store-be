@@ -13,10 +13,8 @@ yarn-error.log*
 lerna-debug.log*
 
 # Migrate
-src/common/prisma/migrations/*
-src/common/prisma/migrations/*.toml
-src/common/prisma/generated
-
+src/common/prisma/schema/migrations/*
+src/common/prisma/schema/generated
 #Swagger
 */metadata.ts
 

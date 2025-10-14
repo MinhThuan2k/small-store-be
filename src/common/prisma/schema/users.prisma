@@ -1,9 +1,19 @@
 model User {
-    id Int     @default(autoincrement()) @id
-    email String  @unique
-    password String? 
-    name String
-    token String?
-    google_id String?
+    id          BigInt     @default(autoincrement()) @id
+    email       String
+    name        String
+    password    String?
+    token       String?
+    google_id   String?
     password_changed_at DateTime?
+
+    createdAt   DateTime      @default(now()) @map("created_at")
+    updatedAt   DateTime?     @updatedAt @map("updated_at")
+    deleted     Int           @default(0)
+    deletedAt   DateTime?     @map("deleted_at")
+
+    CategoryCreatedBy Category[] @relation("CategoryCreatedBy")
+    CategoryUpdatedBy Category[] @relation("CategoryUpdatedBy")
+
+    @@map("users")
 }

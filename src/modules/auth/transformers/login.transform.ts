@@ -6,7 +6,7 @@ export class LoginTransform {
 
   @Expose()
   @Transform((obj) => ({
-    id: obj.value.id,
+    id: obj.value.id.toString(),
     email: obj.value.email,
     name: obj.value.name,
   }))

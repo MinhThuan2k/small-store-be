@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js';
 import bcrypt from 'bcryptjs';
+import { ClsServiceManager } from 'nestjs-cls';
 
 export const hashBcrypt = async (
   text: string,
@@ -17,4 +18,9 @@ export const encrypt = (text: string): string =>
 export const decrypt = (text: any) => {
   const bytes = CryptoJS.AES.decrypt(text);
   return bytes.toString(CryptoJS.enc.Utf8);
+};
+
+export const getCurrentUserId = () => {
+  const cls = ClsServiceManager.getClsService();
+  return cls.get('userId');
 };

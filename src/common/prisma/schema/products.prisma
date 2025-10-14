@@ -1,0 +1,18 @@
+model Product {
+  id          BigInt       @id @default(autoincrement())
+  name        String
+  description String?
+  summary     String?
+  cover       String?
+  categoryId  BigInt?       @map("category_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime?     @updatedAt @map("updated_at")
+  createdBy   BigInt        @map("created_by")
+  updatedBy   BigInt        @map("updated_by")
+  deleted     Int           @default(0)
+  deletedAt   DateTime?     @map("deleted_at")
+
+  category    Category? @relation("CategoryProduct", fields: [categoryId], references: [id])
+
+  @@map("products")
+}

@@ -1,0 +1,20 @@
+model Category {
+  id          BigInt        @id @default(autoincrement())
+  name        String
+  description String?
+
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime?     @updatedAt @map("updated_at")
+  createdBy   BigInt        @map("created_by")
+  updatedBy   BigInt        @map("updated_by")
+  deleted     Int           @default(0)
+  deletedAt   DateTime?     @map("deleted_at")
+
+  createdUser User?         @relation("CategoryCreatedBy", fields: [createdBy], references: [id])
+  updatedUser User?         @relation("CategoryUpdatedBy", fields: [updatedBy], references: [id])
+
+  subCategories SubCategory[]       @relation("ParentCategory")
+  products Product[]       @relation("CategoryProduct")
+
+  @@map("categories")
+}

@@ -1,0 +1,14 @@
+model SubCategory {
+  id          BigInt        @id @default(autoincrement())
+  parentId    BigInt?       @map("parent_id")
+  name        String
+  description String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime?     @updatedAt @map("updated_at")
+  deleted     Int           @default(0)
+  deletedAt   DateTime?     @map("deleted_at")
+
+  parent      Category?    @relation("ParentCategory", fields: [parentId], references: [id])
+
+  @@map("sub_categories")
+}
