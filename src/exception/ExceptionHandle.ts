@@ -4,6 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
 } from '@nestjs/common';
+import { PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { FastifyReply } from 'fastify';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -17,16 +18,27 @@ export class ExceptionHandle implements ExceptionFilter {
     try {
       const status =
         exception instanceof HttpException ? exception.getStatus() : 500;
-      const exceptionResponse =
-        exception instanceof HttpException
-          ? {
-              message: (exception.getResponse() as any).message,
-              statusCode: status,
-            }
-          : {
-              message: exception.message || 'Internal server error',
-              statusCode: status,
-            };
+      let exceptionResponse: any = null;
+      if (exception instanceof HttpException) {
+        const res = exception.getResponse();
+        exceptionResponse = {
+          message: (res as any).message || res,
+          statusCode: status,
+        };
+      } else if (exception instanceof PrismaClientValidationError) {
+        exceptionResponse = {
+          message:
+            process.env.NODE_ENV === 'development'
+              ? exception?.message
+              : 'Database request error',
+          statusCode: status,
+        };
+      } else {
+        exceptionResponse = {
+          message: exception.message || 'Internal server error',
+          statusCode: status,
+        };
+      }
 
       // log
       if (process.env.VERCEL !== '1') {
