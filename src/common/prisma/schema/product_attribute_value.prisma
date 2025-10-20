@@ -1,0 +1,12 @@
+model ProductAttributeValue {
+    id              BigInt        @id @default(autoincrement())
+    product_id      BigInt
+    attribute_id    BigInt
+    value           String
+
+    attribute       Attribute  @relation(fields: [attribute_id], references: [attr_id])
+    product         Product    @relation(fields: [product_id], references: [product_id])
+
+    @@unique([product_id, attribute_id])
+    @@map("product_attribute_values")
+}

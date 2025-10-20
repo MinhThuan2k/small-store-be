@@ -80,9 +80,13 @@ export class Authentication implements CanActivate {
       this.cls.set('userId', user.id);
       await this.redisService.client.expire(key, expiresInRedis);
     } catch (e) {
-      throw e instanceof JsonWebTokenError
-        ? new JsonWebTokenError(e.message)
-        : new UnauthorizedException();
+      if (e instanceof JsonWebTokenError) {
+        throw e instanceof JsonWebTokenError;
+      } else if (e instanceof UnauthorizedException) {
+        throw new UnauthorizedException();
+      } else {
+        throw new Error(e);
+      }
     }
     return true;
   }

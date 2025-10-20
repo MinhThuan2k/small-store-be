@@ -74,8 +74,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
   async getToken(userId: string, jit: string): Promise<string> {
     const key = `${this.prefixUser}:${userId}:${jit}`;
-    const fullKey = this.prefix + ':' + key;
-    return await this.client.get(fullKey);
+    return await this.get(key);
   }
   async deleteToken(userId: string, jit: string): Promise<void> {
     const key = `${this.prefixUser}:${userId}:${jit}`;

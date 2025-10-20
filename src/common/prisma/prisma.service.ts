@@ -11,6 +11,8 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy, OnApplicationShutdown
 {
+  public readonly DEFAULT_PAGE = 1;
+  public readonly DEFAULT_LIMIT = 20;
   constructor() {
     super({
       log: ['query', 'info', 'warn', 'error'],
@@ -35,5 +37,13 @@ export class PrismaService
 
   async onApplicationShutdown() {
     await this.$disconnect();
+  }
+
+  calculateOffset(page: number, limit: number): { skip: number; take: number } {
+    const pageNumber = Number(page) || this.DEFAULT_PAGE;
+    const take = Number(limit) || this.DEFAULT_LIMIT;
+    const skip = (pageNumber - 1) * Number(take);
+
+    return { skip, take };
   }
 }

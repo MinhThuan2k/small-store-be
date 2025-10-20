@@ -15,5 +15,8 @@ model User {
     CategoryCreatedBy Category[] @relation("CategoryCreatedBy")
     CategoryUpdatedBy Category[] @relation("CategoryUpdatedBy")
 
+    ProductCreatedBy Product[] @relation("ProductCreatedBy")
+    ProductUpdatedBy Product[] @relation("ProductUpdatedBy")
+
     @@map("users")
 }
