@@ -6,18 +6,18 @@ model Product {
   summary     String?
   cover       String?
   status      String?       @default("AC")
-  categoryId  BigInt?       @map("category_id")
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime?     @updatedAt @map("updated_at")
+  category_id  BigInt?       @map("category_id")
+  created_at   DateTime      @default(now())
+  updated_at   DateTime?     @updatedAt
   created_by  BigInt       
   updated_by  BigInt       
   deleted     Int           @default(0)
-  deletedAt   DateTime?     @map("deleted_at")
+  deleted_at   DateTime?    
 
   createdBy User?         @relation("ProductCreatedBy", fields: [created_by], references: [id])
   updatedBy User?         @relation("ProductUpdatedBy", fields: [updated_by], references: [id])
 
-  category    Category? @relation("CategoryProduct", fields: [categoryId], references: [id])
+  category    Category? @relation("CategoryProduct", fields: [category_id], references: [id])
   
   attributes    ProductAttributeValue[]
   @@map("products")

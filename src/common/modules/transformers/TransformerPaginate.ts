@@ -36,7 +36,6 @@ export default class TransformerPaginate<T> {
     const transformed = plainToInstance(transformer, this.items, {
       excludeExtraneousValues: true,
     });
-    console.log(instanceToPlain(transformed));
 
     return {
       data: instanceToPlain(transformed),

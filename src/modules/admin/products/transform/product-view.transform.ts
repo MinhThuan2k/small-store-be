@@ -8,13 +8,21 @@ export class ProductViewTransform {
   @Expose() summary?: string;
   @Expose() cover?: string;
   @Expose() status?: string;
-  @Expose() createdAt?: string;
-  @Expose() updatedAt?: string;
+  @Expose() created_at?: string;
+  @Expose() updated_at?: string;
+
+  @Expose()
+  @Transform((val) => {
+    return { id: Number(val.value.id), name: val.value.name };
+  })
+  category?: Record<string, any>;
+
   @Expose()
   @Transform((val) => {
     return { id: Number(val.value.id), name: val.value.name };
   })
   createdBy?: Record<string, any>;
+
   @Expose()
   @Transform((val) => {
     return { id: Number(val.value.id), name: val.value.name };

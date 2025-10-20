@@ -34,10 +34,7 @@ export class ProductViewService {
       where: filter,
       take: take,
       skip: skip,
-      orderBy: { updatedAt: 'desc' },
-      // include: {
-      //   createdBy: true,
-      // },
+      orderBy: { updated_at: 'desc' },
       select: {
         product_id: true,
         sku: true,
@@ -46,9 +43,14 @@ export class ProductViewService {
         summary: true,
         cover: true,
         status: true,
-        categoryId: true,
-        createdAt: true,
-        updatedAt: true,
+        created_at: true,
+        updated_at: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         createdBy: {
           select: {
             id: true,

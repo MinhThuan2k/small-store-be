@@ -3,15 +3,15 @@ model Category {
   name        String
   description String?
 
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime?     @updatedAt @map("updated_at")
-  createdBy   BigInt        @map("created_by")
-  updatedBy   BigInt        @map("updated_by")
+  created_at   DateTime      @default(now()) @map("created_at")
+  updated_at   DateTime?     @updatedAt @map("updated_at")
+  created_by   BigInt       
+  updated_by   BigInt       
   deleted     Int           @default(0)
-  deletedAt   DateTime?     @map("deleted_at")
+  deleted_at   DateTime?    
 
-  createdUser User?         @relation("CategoryCreatedBy", fields: [createdBy], references: [id])
-  updatedUser User?         @relation("CategoryUpdatedBy", fields: [updatedBy], references: [id])
+  createdBy User?         @relation("CategoryCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?         @relation("CategoryUpdatedBy", fields: [updated_by], references: [id])
 
   subCategories SubCategory[]       @relation("ParentCategory")
   products Product[]       @relation("CategoryProduct")
