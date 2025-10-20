@@ -1,11 +1,12 @@
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { Injectable, Res } from '@nestjs/common';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyReply } from 'fastify';
 import { ProductViewTransform } from '../transform/product-view.transform';
 import { ProductViewDto } from '../dto/product-view.dto';
 import TransformerPaginate, {
   PaginateResult,
 } from '@/common/modules/transformers/TransformerPaginate';
+import { CoreService } from '@/common/modules/services/core.service';
 
 @Injectable()
 export class ProductViewService {
@@ -67,12 +68,12 @@ export class ProductViewService {
     });
     const total = await this.prisma.product.count({ where: filter });
 
-    return response
-      .status(200)
-      .send(
-        new TransformerPaginate(products, total, take, skip).paginate(
-          ProductViewTransform,
-        ),
-      );
+    return new CoreService(response).responsePaginate(
+      products,
+      total,
+      take,
+      skip,
+      ProductViewTransform,
+    );
   }
 }

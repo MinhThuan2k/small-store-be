@@ -32,7 +32,7 @@ export default class TransformerPaginate<T> {
     this.totalPage = Math.ceil(this.total / this.take);
   }
 
-  paginate<D>(transformer: ClassConstructor<D>): PaginateResult<D> {
+  transform<D>(transformer: ClassConstructor<D>): PaginateResult<D> {
     const transformed = plainToInstance(transformer, this.items, {
       excludeExtraneousValues: true,
     });
