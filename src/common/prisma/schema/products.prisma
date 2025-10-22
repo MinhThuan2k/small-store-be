@@ -5,8 +5,8 @@ model Product {
   description String?
   summary     String?
   cover       String?
-  status      String?       @default("AC")
-  category_id  BigInt?       @map("category_id")
+  status      String?        @default("AC")
+  category_id  BigInt?       
   created_at   DateTime      @default(now())
   updated_at   DateTime?     @updatedAt
   created_by  BigInt       
