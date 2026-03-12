@@ -1,12 +1,13 @@
+import { FieldString } from '@/decorators/field.decorator';
 import { IsNotEmpty } from 'class-validator';
 
 export class SignUpDto {
-  @IsNotEmpty()
-  email: string;
+	@FieldString({ isNotEmpty: true })
+	email: string;
 
-  @IsNotEmpty()
-  password: string;
+	@FieldString({ isNotEmpty: true })
+	password: string;
 
-  @IsNotEmpty()
-  name: string;
+	@FieldString({ isNotEmpty: true })
+	name: string;
 }

@@ -13,8 +13,8 @@ yarn-error.log*
 lerna-debug.log*
 
 # Migrate
-src/common/prisma/schema/migrations/*
 src/common/prisma/schema/generated
+src/common/prisma/generated
 #Swagger
 */metadata.ts
 
@@ -63,3 +63,5 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 .vercel
+
+/generated/prisma
