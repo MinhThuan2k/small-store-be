@@ -17,9 +17,14 @@ import {
 	QueryResolver,
 } from 'nestjs-i18n';
 import path, { join } from 'path';
+import { jwtConfig } from './config/jwt';
 
 const imports = [
-	ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+	ConfigModule.forRoot({
+		isGlobal: true,
+		envFilePath: '.env',
+		load: [jwtConfig],
+	}),
 	ClsModule.forRoot({ global: true, middleware: { mount: true } }),
 	I18nModule.forRootAsync({
 		useFactory: (configService: ConfigService) => ({

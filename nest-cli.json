@@ -7,6 +7,7 @@
 	"compilerOptions": {
 		"deleteOutDir": true,
 		"builder": "swc",
+		"typeCheck": true,
 		"plugins": ["@nestjs/swagger"],
 		"assets": [{ "include": "i18n/**/*", "watchAssets": true }]
 	}

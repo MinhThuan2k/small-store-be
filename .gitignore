@@ -15,6 +15,7 @@ lerna-debug.log*
 # Migrate
 src/common/prisma/schema/generated
 src/common/prisma/generated
+src/generated
 #Swagger
 */metadata.ts
 

@@ -14,39 +14,38 @@ import JSONbig from 'json-bigint';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
-  ) {}
+	constructor(
+		private prisma: PrismaService,
+		private readonly jwtService: JwtService,
+		private readonly redisService: RedisService,
+	) {}
 
-  async signIn(dto: LoginUserDto): Promise<LoginTransform> {
-    return this.prisma.$transaction(async (tx) => {
-      const user = await tx.user.findFirst({
-        where: {
-          email: dto.email,
-        },
-      });
-      const userId = user.id.toString();
+	async signIn(dto: LoginUserDto): Promise<LoginTransform> {
+		const user = await this.prisma.user.findFirst({
+			where: {
+				email: dto.email,
+			},
+		});
 
-      if (!user || !(await compareBcrypt(dto.password, user.password))) {
-        throw new UserException(
-          'Email or Password is incorrect!',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
+		if (!user || !(await compareBcrypt(dto.password, user.password))) {
+			throw new UserException(
+				'Email or Password is incorrect!',
+				HttpStatus.UNAUTHORIZED,
+			);
+		}
 
-      const payload: Payload = {
-        iss: 'clone-jira',
-        sub: userId,
-        jit: uuidv4(),
-      };
-      const token = await this.jwtService.signAsync(payload);
+		const userId = user?.id.toString();
 
-      await this.redisService.setUserCache(JSONbig.stringify(user), userId);
-      await this.redisService.setToken(token, userId, payload.jit);
+		const payload: Payload = {
+			iss: 'clone-jira',
+			sub: userId,
+			jit: uuidv4(),
+		};
+		const token = await this.jwtService.signAsync(payload);
 
-      return plainToClass(LoginTransform, { token, user });
-    });
-  }
+		await this.redisService.setUserCache(JSONbig.stringify(user), userId);
+		await this.redisService.setToken(token, userId, payload.jit);
+
+		return plainToClass(LoginTransform, { token, user });
+	}
 }

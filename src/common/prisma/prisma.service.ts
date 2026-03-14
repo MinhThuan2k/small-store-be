@@ -1,3 +1,5 @@
+import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from '@/common/shared/services/app-config.service';
 import {
 	Injectable,
 	OnApplicationShutdown,
@@ -5,9 +7,8 @@ import {
 	OnModuleInit,
 } from '@nestjs/common';
 import { softDelete } from './middlewares/softDelete';
-import { PrismaClient } from './generated/client';
+import { PrismaClient } from '@/generated/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import { getConfigDB } from './prisma.config';
 @Injectable()
 export class PrismaService
 	extends PrismaClient
@@ -15,8 +16,10 @@ export class PrismaService
 {
 	public readonly DEFAULT_PAGE = 1;
 	public readonly DEFAULT_LIMIT = 20;
-	constructor() {
-		const adapter = new PrismaMariaDb(getConfigDB());
+	constructor(private configService: ConfigService) {
+		const adapter = new PrismaMariaDb(
+			AppConfigService.getConfigDB(configService),
+		);
 		super({
 			log: ['query', 'info', 'warn', 'error'],
 			adapter,

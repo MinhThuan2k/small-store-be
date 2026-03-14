@@ -1,5 +1,5 @@
 import { getCurrentUserId } from '@/common/helpers/function';
-import { Prisma } from '@/common/prisma/generated/client';
+import { Prisma } from '@/generated/client';
 
 const IS_DELETED = 1;
 const IS_NON_DELETED = 0;
@@ -157,8 +157,8 @@ function operationDelete(args: any) {
 		data: {
 			...((args as any)?.data ?? {}),
 			deleted: IS_DELETED,
-			deletedAt: new Date(),
-			updatedBy: userId,
+			deleted_at: new Date(),
+			updated_by: userId,
 		},
 	};
 }
@@ -168,10 +168,10 @@ function operationCreate(args: any) {
 		...ensureArgs(args),
 		data: {
 			...(args?.data ?? {}),
-			createdBy: userId,
-			updatedBy: userId,
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			created_by: userId,
+			updated_by: userId,
+			created_at: new Date(),
+			updated_at: new Date(),
 		},
 	};
 }
